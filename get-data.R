@@ -1,2 +1,4 @@
 source("https://raw.githubusercontent.com/xrander/emission_tracker/master/data/dat-processing.r")
-# source("")
+rm(list = ls())
+
+read_csv("data/data.csv")

@@ -3,6 +3,5 @@ if (require(pacman) == FALSE) {
 } else{
   library(pacman)
 }
-  
 
 p_load(shiny, shinyMobile, tidyverse, rvest, httr, jsonlite, janitor)
