@@ -4,4 +4,4 @@ if (require(pacman) == FALSE) {
   library(pacman)
 }
 
-p_load(shiny, shinyMobile, tidyverse, rvest, httr, jsonlite, janitor)
+p_load(shiny, shinyMobile, tidyverse, rvest, httr, jsonlite, janitor, apexcharter, modeltime)

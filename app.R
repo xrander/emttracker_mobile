@@ -1,4 +1,6 @@
 source("data/dependencies.R")
+source("get-data.R")
+
 colors <- tibble(
   primary= '#007aff',
   red= '#ff3b30',
@@ -57,86 +59,175 @@ ui <- f7Page(
     f7Tabs(
       animated = TRUE,
       id = "tabset",
-      # First Tab
+      
+      # First Tab --------------------------------------------
+      ## Overview
       f7Tab(
         title = "Overview",
         tabName = "Tab1",
-        icon = f7Icon(
-          "chart_pie_fill",
-          color = "primary"
+        icon = f7Icon("chart_pie_fill", color = "primary"),
+        active = TRUE,
+        
+        ## Tab 1 Input Box -----------------------------------
+        f7List(
+          inset = TRUE,
+          dividers = TRUE,
+          strong = TRUE,
+          f7SmartSelect(
+            inputId = "select_year",
+            label = "Choose a Year",
+            choices = unique(tbl$year),
+            openIn = "sheet",
+            selected = 1990
+          )
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Gas Emission for Year",
+          apexchartOutput("gas_emission")
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Least Emitting Country",
+          apexchartOutput("least_emitters")
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = FALSE,
+          divider = TRUE,
+          title = "Top Emitting Country",
+          apexchartOutput("top_charter")
         )
       ),
       
-      # Second Tab
+      # Second Tab -------------------------------------------
+      ## Gas comparison
       f7Tab(
         title = "Compare Gases",
         tabName = "Tab2",
-        icon = f7Icon(
-          "arrow_right_arrow_left_circle_fill",
-          color = "primary"
+        icon = f7Icon("arrow_right_arrow_left_circle_fill", color = "primary"),
+        
+        ## Tab 2 Input Box -----------------------------------
+        f7List(
+          inset = TRUE,
+          strong = TRUE,
+          outline = TRUE,
+          f7SmartSelect(
+            inputId = "select_year_2",
+            label = "Choose a Year",
+            choices = unique(tbl$year),
+            openIn = "sheet"
+          ),
+          hr(),
+          f7SmartSelect(
+            inputId = "Select_gas",
+            label = "Choose a Greenhouse Gas",
+            choices = unique(tbl$gas),
+            openIn = "sheet"
+          )
+        ),
+        
+        f7Card(
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Total Gas Emission",
+          apexchartOutput("total_gas")
         ),
         f7Card(
-          outline = TRUE
-        ),
-        f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Individual Gas Comparison",
+          apexchartOutput("individual_gas")
         )
       ),
       
-      # Third Tab
+      # Third Tab ------------------------------------------
+      ## Country metrics
       f7Tab(
         title = "Country Comparison",
         tabName = "Tab3",
-        icon = f7Icon(
-          "flag_circle_fill",
-          color = "primary"
+        icon = f7Icon("flag_circle_fill", color = "primary"),
+        
+        ## Tab 3 Input Box ---------------------------------
+        f7List(
+          inset = TRUE,
+          strong = TRUE,
+          outline = TRUE,
+          f7SmartSelect(
+            inputId = "select_country",
+            label = "Choose a Country",
+            choices = unique(tbl$country),
+            openIn = "sheet"
+          )
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Emission per Person",
+          apexchartOutput("emission_per_person")
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Emission per Capital",
+          apexchartOutput("emission_per_capital")
         ),
         f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Proportion of Total Emission for Year",
+          apexchartOutput("prop_emission")
         )
       ),
       
-      # Fourth Tab
+      # Fourth Tab ------------------------------------------
+      ## Forecast data
       f7Tab(
         title = "Emission Forecast",
         tabName = "Tab4",
-        icon = f7Icon(
-          "graph_square_fill",
-          color = "primary"
+        icon = f7Icon("graph_square_fill", color = "primary"),
+        
+        ## Tab 4 Input Box -----------------------------------
+        f7List(
+          inset = TRUE,
+          outline = TRUE,
+          strong = TRUE,
+          f7DatePicker(
+            inputId = "pick_date",
+            label = "Pick a Date",
+            minDate = min(unique(forecast_tbl$year)),
+            maxDate = max(unique(forecast_tbl$year)),
+            value = unique(forecast_tbl$year)[30],
+            openIn = "popover",
+            closeByOutsideClick = TRUE,
+            header = TRUE
+          ),
+          hr(),
+          f7SmartSelect(
+            inputId = "select_ghg",
+            label = "Select GreenHouse Gas",
+            choices = unique(as.character(forecast_tbl$gas)),
+            openIn = "popup"
+          )
         ),
         f7Card(
-          outline = TRUE
-        )
-      ),
-      
-      # Fifth Tab
-      f7Tab(
-        title = "Scenario Analysis",
-        tabName = "Tab5",
-        icon = f7Icon(
-          "cloud_sun_rain_fill",
-          color = "primary"
-        ),
-        f7Card(
-          outline = TRUE
+          outline = TRUE,
+          raised = TRUE,
+          divider = TRUE,
+          title = "Emission Forecast",
+          apexchartOutput("forecast")
         )
       )
-    ),
+    )
   ),
   allowPWA = TRUE
 )
