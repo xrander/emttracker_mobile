@@ -75,8 +75,8 @@ plot_top_emitters <- function(select_year) {
         color = "#000"
       )
     ) |> 
-    ax_xaxis(title = list(text = "Countries")) |> 
-    ax_yaxis(title = list(text = "Emissions in Co2e (Billions)")) |> 
+    ax_yaxis(title = list(text = "Countries")) |> 
+    ax_xaxis(title = list(text = "Emissions in Co2e (Millions)")) |> 
     ax_fill(
       type = "solid",
       colors = "#D40505"
@@ -111,8 +111,8 @@ plot_least_emitters <- function(select_year) {
         color = "#000000"
       )
     ) |> 
-    ax_xaxis(title = list(text = "Countries")) |> 
-    ax_yaxis(title = list(text = "Emissions in Co2e (Millions)")) |> 
+    ax_yaxis(title = list(text = "Countries")) |> 
+    ax_xaxis(title = list(text = "Emissions in Co2e (Millions)")) |> 
     ax_fill(
       type = "solid",
       colors = "#387B3E"
@@ -139,10 +139,21 @@ plot_yearly_gas_proportion <- function(select_year) {
       aes(gas, percent_emission)
     ) |> 
     ax_xaxis(
+      title = list(text = "Proportion of Emission"),
       type = "numeric",
       tickPlacement = "on",
       labels = list(
         formatter = format_num(".0%")
+      )
+    ) |> 
+    ax_yaxis(title = list(text = "Greenhouse Gas")) |> 
+    ax_title(
+      text = paste0("Proportion of Greenhouse Gas for Year ", {{select_year}}),
+      align = "center",
+      style = list(
+        fontSize = "25px",
+        fontWeight = 500,
+        color = "#000000"
       )
     ) |> 
     ax_fill(

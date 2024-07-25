@@ -83,25 +83,26 @@ ui <- f7Page(
         ),
         f7Card(
           outline = TRUE,
-          raised = TRUE,
+          raised = FALSE,
           divider = TRUE,
-          title = "Gas Emission for Year",
-          apexchartOutput("gas_emission")
-        ),
-        f7Card(
-          outline = TRUE,
-          raised = TRUE,
-          divider = TRUE,
-          title = "Least Emitting Country",
-          apexchartOutput("least_emitters")
+          title = NULL,
+          apexchartOutput("top_emitters")
         ),
         f7Card(
           outline = TRUE,
           raised = FALSE,
-          divider = TRUE,
-          title = "Top Emitting Country",
-          apexchartOutput("top_charter")
+          divider = FALSE,
+          title = NULL,
+          apexchartOutput("gas_emission")
+        ),
+        f7Card(
+          outline = TRUE,
+          raised = FALSE,
+          divider = FALSE,
+          title = NULL,
+          apexchartOutput("least_emitters")
         )
+       
       ),
       
       # Second Tab -------------------------------------------
@@ -233,7 +234,20 @@ ui <- f7Page(
 )
 
 server <- function(input, output, session){
+
+  ## Tab 1 output ------------------------------------------------------
+
+  output$gas_emission <- renderApexchart({
+    plot_yearly_gas_proportion(input$select_year)
+  })
   
+  output$least_emitters <- renderApexchart({
+    plot_least_emitters(input$select_year)
+  })
+  
+  output$top_emitters <- renderApexchart({
+    plot_top_emitters(input$select_year)
+  })
 }
 
 shinyApp(ui, server)
