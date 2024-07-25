@@ -59,11 +59,11 @@ plot_top_emitters <- function(select_year) {
     summarize(
       .by = country,
       emission = sum(emission),
-      emission = round(emission/1e9)
+      emission = round(emission/1e6)
     ) |> 
     slice_max(order_by = emission, n = 5) |> 
     apex(
-      type = "column",
+      type = "bar",
       aes(country, emission)
     ) |> 
     ax_title(
@@ -72,14 +72,17 @@ plot_top_emitters <- function(select_year) {
       style = list(
         fontSize = "25px",
         fontWeight = 500,
-        color = "#800B05"
+        color = "#000"
       )
     ) |> 
     ax_xaxis(title = list(text = "Countries")) |> 
     ax_yaxis(title = list(text = "Emissions in Co2e (Billions)")) |> 
     ax_fill(
       type = "solid",
-      colors = "#E63120"
+      colors = "#D40505"
+    ) |> 
+    ax_tooltip(
+      fixed = list(enabled = TRUE, position = "topright")
     )
 }
 
@@ -94,8 +97,9 @@ plot_least_emitters <- function(select_year) {
       emission = round(emission/1e6)
     ) |> 
     slice_min(order_by = emission, n = 5) |> 
+    arrange(desc(emission)) |> 
     apex(
-      type = "column",
+      type = "bar",
       aes(country, emission)
     ) |> 
     ax_title(
@@ -104,18 +108,53 @@ plot_least_emitters <- function(select_year) {
       style = list(
         fontSize = "25px",
         fontWeight = 500,
-        color = "#800B05"
+        color = "#000000"
       )
     ) |> 
     ax_xaxis(title = list(text = "Countries")) |> 
     ax_yaxis(title = list(text = "Emissions in Co2e (Millions)")) |> 
     ax_fill(
       type = "solid",
-      colors = "#E63120"
+      colors = "#387B3E"
+    ) |> 
+    ax_tooltip(
+      fixed = list(enabled = TRUE, position = "topright")
     )
 }
 
+plot_yearly_gas_proportion <- function(select_year) {
+  tbl |> 
+    filter(year == {{ select_year }}) |> 
+    summarize(
+      .by = gas,
+      emission = sum(emission),
+      emission = round(emission, 1e6)
+    ) |> 
+    mutate(
+      percent_emission = round(emission / sum(emission), 4)
+    ) |> 
+    arrange(desc(percent_emission)) |> 
+    apex(
+      type = "bar",
+      aes(gas, percent_emission)
+    ) |> 
+    ax_xaxis(
+      type = "numeric",
+      tickPlacement = "on",
+      labels = list(
+        formatter = format_num(".0%")
+      )
+    ) |> 
+    ax_fill(
+      type = "solid",
+      colors = "#C70039"
+    ) |> 
+    ax_tooltip(
+      fixed = list(enabled = TRUE, position = "topright")
+    )
+}
 
-
+plot_yearly_gas_proportion(2021)
 plot_top_emitters(1995)
 plot_least_emitters(1995)
+

@@ -61,7 +61,7 @@ ui <- f7Page(
       id = "tabset",
       
       # First Tab --------------------------------------------
-      ## Overview
+      ## Overview -------------------------------------------
       f7Tab(
         title = "Overview",
         tabName = "Tab1",
