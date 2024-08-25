@@ -6,5 +6,5 @@ if (require(pacman) == FALSE) {
 
 p_load(
   shiny, shinyMobile, tidyverse, rvest, httr,
-  jsonlite, janitor, apexcharter, modeltime, bslib
+  jsonlite, janitor, apexcharter, modeltime, bslib, countrycode
 )

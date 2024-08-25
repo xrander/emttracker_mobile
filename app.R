@@ -1,6 +1,8 @@
 source("data/dependencies.R")
 source("get-data.R")
 
+# f7swiper could be useful
+
 colors <- tibble(
   primary= '#007aff',
   red= '#ff3b30',
@@ -68,7 +70,6 @@ ui <- f7Page(
         icon = f7Icon("chart_pie_fill", color = "primary"),
         active = TRUE,
         
-        ## Tab 1 Input Box -----------------------------------
         f7List(
           inset = TRUE,
           dividers = TRUE,
@@ -77,23 +78,58 @@ ui <- f7Page(
             inputId = "select_year",
             label = "Choose a Year",
             choices = unique(tbl$year),
-            openIn = "sheet",
-            selected = 1990
+            openIn = "sheet"
           )
         ),
         f7Card(
           outline = TRUE,
           raised = FALSE,
-          divider = TRUE,
-          title = NULL,
-          apexchartOutput("top_emitters")
+          fullBackground = TRUE,
+          divider = FALSE,
+          title = "Yearly Emission",
+          sparkBoxOutput("year_emission"),
+          hr(),
+          markdown("Select another year to see the trend. *Log transformation applies to all charts in this page except the pie chart*"),
+          hr(),
+          f7Toggle(
+              inputId = "log_trans",
+              label = "Log Transformation"
+          ),
+          
+          
         ),
+        f7Swiper(
+          id = "plot_swiper",
+          f7Slide(
+            f7Card(
+              outline = TRUE,
+              raised = FALSE,
+              divider = TRUE,
+              title = NULL,
+              apexchartOutput("gas_emission"),
+              hr(),
+              "Swipe right for the pie chart"
+            ),
+          ),
+          f7Slide(
+            f7Card(
+              outline = TRUE,
+              raised = FALSE,
+              divider = TRUE,
+              title = NULL,
+              apexchartOutput("gas_emission_pie"),
+              hr(),
+              "Swipe left for the bar chaty"
+            )
+          )
+        ),
+        
         f7Card(
           outline = TRUE,
           raised = FALSE,
           divider = FALSE,
           title = NULL,
-          apexchartOutput("gas_emission")
+          apexchartOutput("top_emitters")
         ),
         f7Card(
           outline = TRUE,
@@ -237,16 +273,62 @@ server <- function(input, output, session){
 
   ## Tab 1 output ------------------------------------------------------
 
+  get_year <- reactive({
+    tbl |> 
+      select(year, emission) |>
+      filter(year <= input$select_year) |>
+      summarize(
+        .by = year,
+        emission = sum(emission)
+      ) |> 
+      mutate(
+        emission = round(emission/1e9, 2)
+      )
+  })
+  
+  output$year_emission <- renderSparkBox({
+    spark_box(
+      data = get_year(),
+      title = get_year() |> 
+        filter(year == input$select_year) |>
+        pull(emission) |> paste0(" CO2e Billion"),
+      subtitle = paste("Emission for", input$select_year),
+      title_style = list(color = "#fff"),
+      subtitle_style = list(color = "#fff"),
+      background = "#0b7d27", color = "#fff"
+    )
+    
+    
+  })
+  
   output$gas_emission <- renderApexchart({
-    plot_yearly_gas_proportion(input$select_year)
+    if (input$log_trans == TRUE) {
+      plot_year_gas_prop_log(input$select_year)
+    } else {
+      plot_yearly_gas_proportion(input$select_year)
+    }
+  })
+  
+  output$gas_emission_pie <- renderApexchart({
+    plot_yearly_gas_prop_pie(input$select_year)
   })
   
   output$least_emitters <- renderApexchart({
-    plot_least_emitters(input$select_year)
+    if (input$log_trans == TRUE) {
+      plot_least_emitters_log(input$select_year)
+    } else {
+      plot_least_emitters(input$select_year)
+    }
+    
   })
   
   output$top_emitters <- renderApexchart({
-    plot_top_emitters(input$select_year)
+    if (input$log_trans == TRUE) {
+      plot_top_emitters_log(input$select_year)
+    } else {
+      plot_top_emitters(input$select_year)
+    }
+    
   })
 }
 
